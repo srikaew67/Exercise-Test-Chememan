@@ -24,8 +24,10 @@ export function EmployeesPage() {
   const [departmentId, setDepartmentId] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState('name');
-  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+  const [sort, setSort] = useState<{ sortBy: string; order: 'asc' | 'desc' }>({
+    sortBy: 'name',
+    order: 'asc',
+  });
   const debouncedSearch = useDebounce(search, 300);
 
   const { employees, total, isLoading } = useEmployees({
@@ -34,8 +36,8 @@ export function EmployeesPage() {
     status: status || undefined,
     page,
     limit: 20,
-    sortBy,
-    order,
+    sortBy: sort.sortBy,
+    order: sort.order,
   });
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -48,14 +50,10 @@ export function EmployeesPage() {
   const updateEmp = useUpdateEmployee();
 
   const handleSort = useCallback((col: string) => {
-    setSortBy(prevCol => {
-      if (prevCol === col) {
-        setOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
-      } else {
-        setOrder('asc');
-      }
-      return col;
-    });
+    setSort((prev) => ({
+      sortBy: col,
+      order: prev.sortBy === col && prev.order === 'asc' ? 'desc' : 'asc',
+    }));
     setPage(1);
   }, []);
 
@@ -102,6 +100,8 @@ export function EmployeesPage() {
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (departmentId) params.set('departmentId', departmentId);
       if (status) params.set('status', status);
+      if (sort.sortBy) params.set('sortBy', sort.sortBy);
+      if (sort.order) params.set('order', sort.order);
       const res = await api.get(`/employees/export?${params.toString()}`, { responseType: 'blob' });
       const url = URL.createObjectURL(res.data);
       const a = document.createElement('a');
@@ -119,8 +119,8 @@ export function EmployeesPage() {
     onEdit: handleEdit,
     onDelete: handleDelete,
     onSort: handleSort,
-    sortBy,
-    order,
+    sortBy: sort.sortBy,
+    order: sort.order,
   });
 
   return (
@@ -171,9 +171,7 @@ export function EmployeesPage() {
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="ACTIVE">Active</SelectItem>
-              <SelectItem value="INACTIVE">Inactive</SelectItem>
-              <SelectItem value="RESIGNED">Resigned</SelectItem>
-              <SelectItem value="ON_LEAVE">On Leave</SelectItem>
+              <SelectItem value="INACTIVE">In Active</SelectItem>
             </SelectContent>
           </Select>
         </div>

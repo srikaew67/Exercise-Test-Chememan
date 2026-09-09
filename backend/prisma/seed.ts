@@ -24,6 +24,7 @@ async function main() {
     { name: 'Finance', code: 'FIN' },
     { name: 'Sales', code: 'SALES' },
     { name: 'Marketing', code: 'MKT' },
+    { name: 'Engineering', code: 'ENG' },
   ];
 
   for (const dept of departmentNames) {
