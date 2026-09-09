@@ -34,9 +34,15 @@ export class ExcelService {
       return { validRows, invalidRows };
     }
 
-    // Load all departments into a name->id map for fast lookup
+    // Load all departments into a name/code->id map for fast lookup
     const departments = await this.prisma.department.findMany();
-    const deptMap = new Map(departments.map((d) => [d.name.toLowerCase().trim(), d.id]));
+    const deptMap = new Map<string, string>();
+    for (const d of departments) {
+      deptMap.set(d.name.toLowerCase().trim(), d.id);
+      if (d.code) {
+        deptMap.set(d.code.toLowerCase().trim(), d.id);
+      }
+    }
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // skip header row
@@ -91,11 +97,16 @@ export class ExcelService {
           raw && typeof raw === 'object' && 'result' in raw
             ? (raw as any).result
             : raw;
-        if (!val) {
+        if (!val && val !== 0) {
           reasons.push(`${fieldName} is required`);
           return null;
         }
         if (val instanceof Date) return val.toISOString();
+        if (typeof val === 'number') {
+          // Excel serial date (days since 1899-12-30)
+          const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+          if (!isNaN(date.getTime())) return date.toISOString();
+        }
         const d = new Date(String(val));
         if (isNaN(d.getTime())) {
           reasons.push(`${fieldName} is not a valid date`);
@@ -106,14 +117,23 @@ export class ExcelService {
       const joinDate = parseDate(rawJoinDate, 'Join Date');
       const lastUpdatedDate = parseDate(rawLastUpdated, 'Last Updated Date');
 
-      const VALID_STATUSES = ['ACTIVE', 'INACTIVE', 'RESIGNED', 'ON_LEAVE'];
-      const statusStr =
-        rawStatus !== undefined && rawStatus !== null
-          ? String(rawStatus).trim().toUpperCase()
-          : '';
-      if (!VALID_STATUSES.includes(statusStr)) {
+      const rawStatusStr =
+        rawStatus !== undefined && rawStatus !== null ? String(rawStatus).trim() : '';
+      const normStatus = rawStatusStr.toUpperCase().replace(/[\s_-]+/g, '');
+      let statusStr = '';
+      if (normStatus === 'ACTIVE') {
+        statusStr = 'ACTIVE';
+      } else if (normStatus === 'INACTIVE') {
+        statusStr = 'INACTIVE';
+      } else if (normStatus === 'RESIGNED') {
+        statusStr = 'RESIGNED';
+      } else if (normStatus === 'ONLEAVE') {
+        statusStr = 'ON_LEAVE';
+      }
+
+      if (!statusStr) {
         reasons.push(
-          `Status must be one of ACTIVE, INACTIVE, RESIGNED, ON_LEAVE — got '${rawStatus}'`,
+          `Status must be one of Active, In Active — got '${rawStatus}'`,
         );
       }
 
@@ -143,7 +163,7 @@ export class ExcelService {
       { header: 'ID', key: 'empCode', width: 15 },
       { header: 'Name', key: 'name', width: 25 },
       { header: 'Department', key: 'department', width: 20 },
-      { header: 'Salary', key: 'salary', width: 15 },
+      { header: 'Salary', key: 'salary', width: 15, style: { numFmt: '#,##0.00' } },
       { header: 'Join Date', key: 'joinDate', width: 15 },
       { header: 'Status', key: 'status', width: 12 },
       { header: 'Last Updated Date', key: 'lastUpdatedDate', width: 20 },

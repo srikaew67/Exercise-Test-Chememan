@@ -5,7 +5,7 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto.js';
 import { EmployeeQueryDto } from './dto/employee-query.dto.js';
 import { Prisma } from '@prisma/client';
 
-const SORTABLE_FIELDS = ['name', 'empCode', 'salary', 'joinDate', 'status'];
+const SORTABLE_FIELDS = ['name', 'empCode', 'salary', 'joinDate', 'status', 'lastUpdatedDate'];
 
 @Injectable()
 export class EmployeesService {
@@ -82,7 +82,7 @@ export class EmployeesService {
           ...(dto.salary !== undefined && { salary: dto.salary }),
           ...(dto.joinDate !== undefined && { joinDate: new Date(dto.joinDate) }),
           ...(dto.status !== undefined && { status: dto.status as any }),
-          ...(dto.lastUpdatedDate !== undefined && { lastUpdatedDate: new Date(dto.lastUpdatedDate) }),
+          lastUpdatedDate: dto.lastUpdatedDate ? new Date(dto.lastUpdatedDate) : new Date(),
           updatedById: userId,
         },
         include: { department: true },

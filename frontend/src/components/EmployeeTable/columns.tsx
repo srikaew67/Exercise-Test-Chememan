@@ -53,6 +53,43 @@ const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 
   ON_LEAVE: 'outline',
 };
 
+export function formatSalary(val: number | string | null | undefined): string {
+  if (val === null || val === undefined || val === '') return '0.00';
+  const num = typeof val === 'number' ? val : parseFloat(String(val).replace(/,/g, ''));
+  if (isNaN(num)) return '0.00';
+  return num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export function formatExcelDate(dateVal: string | Date | null | undefined): string {
+  if (!dateVal) return '-';
+  const str = String(dateVal).trim();
+  if (/^\d{1,2}-[A-Za-z]{3}-\d{2}$/.test(str)) return str;
+
+  const d = dateVal instanceof Date ? dateVal : new Date(str);
+  if (isNaN(d.getTime())) return str;
+
+  const isUtc = typeof dateVal === 'string' && (dateVal.includes('Z') || dateVal.includes('T') || /^\d{4}-\d{2}-\d{2}$/.test(dateVal));
+  const day = String(isUtc ? d.getUTCDate() : d.getDate()).padStart(2, '0');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[isUtc ? d.getUTCMonth() : d.getMonth()];
+  const year = String(isUtc ? d.getUTCFullYear() : d.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+}
+
+export function formatStatus(val: string | null | undefined): string {
+  if (!val) return '';
+  const upper = val.toUpperCase().replace(/\s+/g, '');
+  if (upper === 'INACTIVE') return 'In Active';
+  if (upper === 'ACTIVE') return 'Active';
+  return val
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
 export function buildColumns({ isAdmin, onEdit, onDelete, onSort, sortBy, order }: ColOptions): ColumnDef<Employee>[] {
   const cols: ColumnDef<Employee>[] = [
     {
@@ -79,22 +116,41 @@ export function buildColumns({ isAdmin, onEdit, onDelete, onSort, sortBy, order 
       header: () => (
         <SortButton col="salary" label="Salary" onSort={onSort} active={sortBy === 'salary'} order={order} />
       ),
-      cell: ({ row }) => <span className="text-sm text-slate-700">{Number(row.original.salary).toLocaleString()}</span>,
+      cell: ({ row }) => <span className="text-sm font-medium text-slate-700">{formatSalary(row.original.salary)}</span>,
     },
     {
       accessorKey: 'joinDate',
       header: () => (
         <SortButton col="joinDate" label="Join Date" onSort={onSort} active={sortBy === 'joinDate'} order={order} />
       ),
-      cell: ({ row }) => <span className="text-sm text-slate-600">{new Date(row.original.joinDate).toLocaleDateString()}</span>,
+      cell: ({ row }) => <span className="text-sm text-slate-600">{formatExcelDate(row.original.joinDate)}</span>,
     },
     {
       accessorKey: 'status',
-      header: () => <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Status</span>,
+      header: () => (
+        <SortButton col="status" label="Status" onSort={onSort} active={sortBy === 'status'} order={order} />
+      ),
       cell: ({ row }) => (
         <Badge variant={STATUS_VARIANTS[row.original.status] ?? 'secondary'}>
-          {row.original.status.replace('_', ' ')}
+          {formatStatus(row.original.status)}
         </Badge>
+      ),
+    },
+    {
+      accessorKey: 'lastUpdatedDate',
+      header: () => (
+        <SortButton
+          col="lastUpdatedDate"
+          label="Last Updated Date"
+          onSort={onSort}
+          active={sortBy === 'lastUpdatedDate'}
+          order={order}
+        />
+      ),
+      cell: ({ row }) => (
+        <span className="text-sm text-slate-600">
+          {formatExcelDate(row.original.lastUpdatedDate)}
+        </span>
       ),
     },
   ];

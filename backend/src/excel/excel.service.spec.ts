@@ -172,7 +172,7 @@ describe('ExcelService', () => {
           'Salary must be a numeric value',
           'Join Date is not a valid date',
           'Last Updated Date is not a valid date',
-          "Status must be one of ACTIVE, INACTIVE, RESIGNED, ON_LEAVE — got 'INVALID_STATUS'",
+          "Status must be one of Active, In Active — got 'INVALID_STATUS'",
         ]),
       );
     });
@@ -204,10 +204,10 @@ describe('ExcelService', () => {
       expect(result.invalidRows[0].reasons).toContain('ID is required');
     });
 
-    it('should handle all 4 valid statuses: ACTIVE, INACTIVE, RESIGNED, ON_LEAVE', async () => {
+    it('should handle valid statuses including In Active and Active', async () => {
       const buffer = await createWorkbookBuffer([
         ['E1', 'Emp 1', 'Engineering', 50000, '2024-01-01', 'ACTIVE', '2024-01-01'],
-        ['E2', 'Emp 2', 'Engineering', 50000, '2024-01-01', 'inactive', '2024-01-01'],
+        ['E2', 'Emp 2', 'Engineering', 50000, '2024-01-01', 'In Active', '2024-01-01'],
         ['E3', 'Emp 3', 'Engineering', 50000, '2024-01-01', 'RESIGNED', '2024-01-01'],
         ['E4', 'Emp 4', 'Engineering', 50000, '2024-01-01', 'on_leave', '2024-01-01'],
       ]);

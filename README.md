@@ -81,15 +81,25 @@ DELETE /employees/:id            Admin - Delete an employee
 ## Excel Import Format
 | Column | Type | Notes |
 |---|---|---|
-| ID | string | Maps to `empCode` — upsert key |
-| Name | string | Full employee name |
-| Department | string | Must match exact department name in system |
-| Salary | number | Positive numeric value |
-| Join Date | date | Any standard date format |
-| Status | string | `ACTIVE`, `INACTIVE`, `RESIGNED`, or `ON_LEAVE` |
-| Last Updated Date | date | Any standard date format |
+| ID | string / number | Maps to `empCode` — unique upsert key (e.g. `101`) |
+| Name | string | Full employee name (e.g. `John Doe`) |
+| Department | string | Matches department name or code (e.g. `Engineering`, `Information Technology` / `IT`) |
+| Salary | number | Numeric value or formatted string (e.g. `65,000.00`) |
+| Join Date | date | Formatted date string (e.g. `15-Jan-23`, `2023-01-15`) or Excel date |
+| Status | string | `Active` or `In Active` (case-insensitive, also accepts `ACTIVE` / `INACTIVE`) |
+| Last Updated Date | date | Formatted date string (e.g. `10-Jan-26`, `2026-01-10`) or Excel date |
 
-> **Note:** Unmatched department names appear as errors in the import preview — departments are never auto-created during employee import.
+### Sample Excel Data
+```text
+ID    Name        Department     Salary       Join Date    Status       Last Updated Date
+101   John Doe    Engineering    65,000.00    15-Jan-23    Active       10-Jan-26
+102   Jane Smith  Finance        55,000.00    01-Feb-23    In Active    12-Jan-26
+```
+
+> **Notes:**
+> - Department names/codes are checked case-insensitively. Unmatched departments appear as errors in the preview.
+> - On the Add/Edit Employee modal, `Last Updated Date` is handled automatically by the server based on the timestamp of creation/modification.
+> - Table columns support ascending/descending toggle sorting (`ID`, `Name`, `Salary`, `Join Date`, `Status`, `Last Updated Date`).
 
 ## Project Structure
 ```

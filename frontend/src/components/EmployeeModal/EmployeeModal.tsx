@@ -36,7 +36,6 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
       salary: 0,
       joinDate: '',
       status: 'ACTIVE',
-      lastUpdatedDate: '',
     },
   });
 
@@ -52,8 +51,7 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
           departmentId: employee.department?.id || '',
           salary: Number(employee.salary),
           joinDate: employee.joinDate ? employee.joinDate.split('T')[0] : '',
-          status: employee.status,
-          lastUpdatedDate: employee.lastUpdatedDate ? employee.lastUpdatedDate.split('T')[0] : '',
+          status: employee.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE',
         });
       } else {
         const today = new Date().toISOString().split('T')[0];
@@ -64,7 +62,6 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
           salary: undefined as unknown as number,
           joinDate: today,
           status: 'ACTIVE',
-          lastUpdatedDate: today,
         });
       }
     }
@@ -80,7 +77,7 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Employee Code</Label>
-              <Input {...register('empCode')} placeholder="EMP001" />
+              <Input {...register('empCode')} placeholder="101" />
               {errors.empCode && <p className="text-xs text-red-500">{errors.empCode.message}</p>}
             </div>
             <div className="space-y-1">
@@ -94,9 +91,7 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="INACTIVE">Inactive</SelectItem>
-                  <SelectItem value="RESIGNED">Resigned</SelectItem>
-                  <SelectItem value="ON_LEAVE">On Leave</SelectItem>
+                  <SelectItem value="INACTIVE">In Active</SelectItem>
                 </SelectContent>
               </Select>
               {errors.status && <p className="text-xs text-red-500">{errors.status.message}</p>}
@@ -134,14 +129,12 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
             </div>
             <div className="space-y-1">
               <Label>Join Date</Label>
-              <Input type="date" {...register('joinDate')} />
+              <Input
+                type="date"
+                {...register('joinDate')}
+              />
               {errors.joinDate && <p className="text-xs text-red-500">{errors.joinDate.message}</p>}
             </div>
-          </div>
-          <div className="space-y-1">
-            <Label>Last Updated Date</Label>
-            <Input type="date" {...register('lastUpdatedDate')} />
-            {errors.lastUpdatedDate && <p className="text-xs text-red-500">{errors.lastUpdatedDate.message}</p>}
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

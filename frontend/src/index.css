@@ -79,4 +79,17 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Calendar picker indicator spacing aligned with select trigger icon */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 0;
+    padding: 0;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.8;
+  }
 }
