@@ -6,6 +6,7 @@ import { LoginPage } from './pages/LoginPage';
 import { AppShell } from './components/Layout/AppShell';
 import { DashboardPage } from './pages/DashboardPage';
 import { EmployeesPage } from './pages/EmployeesPage';
+import { DepartmentsPage } from './pages/DepartmentsPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('access_token');
@@ -25,7 +26,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/employees" element={<EmployeesPage />} />
-                  <Route path="/departments" element={<div className="text-slate-500 text-sm">Departments — coming in Task 10</div>} />
+                  <Route path="/departments" element={<DepartmentsPage />} />
                 </Routes>
               </AppShell>
             </ProtectedRoute>
