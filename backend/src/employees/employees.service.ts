@@ -101,10 +101,13 @@ export class EmployeesService {
     return { message: 'Employee deleted' };
   }
 
-  async upsertMany(rows: CreateEmployeeDto[], userId: string) {
-    let upserted = 0;
-    for (const row of rows) {
-      await this.prisma.employee.upsert({
+  async upsertMany(rows: CreateEmployeeDto[] = [], userId: string) {
+    if (!rows || rows.length === 0) {
+      return { upserted: 0 };
+    }
+
+    const operations = rows.map((row) =>
+      this.prisma.employee.upsert({
         where: { empCode: row.empCode },
         update: {
           name: row.name,
@@ -125,9 +128,10 @@ export class EmployeesService {
           lastUpdatedDate: row.lastUpdatedDate ? new Date(row.lastUpdatedDate) : new Date(),
           createdById: userId,
         },
-      });
-      upserted++;
-    }
-    return { upserted };
+      }),
+    );
+
+    const results = await this.prisma.$transaction(operations);
+    return { upserted: results.length };
   }
 }

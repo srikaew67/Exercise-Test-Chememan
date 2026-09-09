@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
@@ -20,6 +21,7 @@ import { ExcelService } from '../excel/excel.service.js';
 import { CreateEmployeeDto } from './dto/create-employee.dto.js';
 import { UpdateEmployeeDto } from './dto/update-employee.dto.js';
 import { EmployeeQueryDto } from './dto/employee-query.dto.js';
+import { ImportCommitDto } from './dto/import-commit.dto.js';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../common/guards/roles.guard.js';
 import { Roles } from '../common/decorators/roles.decorator.js';
@@ -59,7 +61,10 @@ export class EmployeesController {
   @Roles('ADMIN')
   @Post('import')
   @UseInterceptors(FileInterceptor('file'))
-  async import(@UploadedFile() file: Express.Multer.File) {
+  async import(@UploadedFile() file?: Express.Multer.File) {
+    if (!file || !file.buffer) {
+      throw new BadRequestException('Please provide an .xlsx file');
+    }
     return this.excelService.parseAndValidate(file.buffer);
   }
 
@@ -67,7 +72,7 @@ export class EmployeesController {
   @Roles('ADMIN')
   @Post('import/commit')
   async importCommit(
-    @Body() body: { validRows: CreateEmployeeDto[] },
+    @Body() body: ImportCommitDto,
     @CurrentUser() user: { id: string },
   ) {
     return this.employeesService.upsertMany(body.validRows, user.id);
