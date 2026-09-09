@@ -3,6 +3,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { queryClient } from './lib/queryClient';
 import { LoginPage } from './pages/LoginPage';
+import { AppShell } from './components/Layout/AppShell';
+import { DashboardPage } from './pages/DashboardPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('access_token');
@@ -18,7 +20,13 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/*" element={
             <ProtectedRoute>
-              <div className="p-8 text-slate-600">App shell — coming in Task 8</div>
+              <AppShell>
+                <Routes>
+                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/employees" element={<div className="text-slate-500 text-sm">Employees — coming in Task 9</div>} />
+                  <Route path="/departments" element={<div className="text-slate-500 text-sm">Departments — coming in Task 10</div>} />
+                </Routes>
+              </AppShell>
             </ProtectedRoute>
           } />
         </Routes>
