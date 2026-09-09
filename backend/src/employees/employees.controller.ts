@@ -20,7 +20,7 @@ import { EmployeesService } from './employees.service.js';
 import { ExcelService } from '../excel/excel.service.js';
 import { CreateEmployeeDto } from './dto/create-employee.dto.js';
 import { UpdateEmployeeDto } from './dto/update-employee.dto.js';
-import { EmployeeQueryDto } from './dto/employee-query.dto.js';
+import { EmployeeQueryDto, SortOrder } from './dto/employee-query.dto.js';
 import { ImportCommitDto } from './dto/import-commit.dto.js';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../common/guards/roles.guard.js';
@@ -43,7 +43,7 @@ export class EmployeesController {
 
   @Get('export')
   async export(@Query() query: EmployeeQueryDto, @Res() res: Response) {
-    const { data } = await this.employeesService.findAll({ ...query, limit: 100000, page: 1 });
+    const { data } = await this.employeesService.findAll({ ...query, limit: 100000, page: 1, sortBy: 'empCode', order: SortOrder.ASC });
     const buffer = await this.excelService.exportEmployees(data);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename="employees.xlsx"');
