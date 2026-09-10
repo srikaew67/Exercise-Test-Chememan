@@ -29,28 +29,27 @@ function SortButton({
   return (
     <button
       type="button"
-      className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-slate-800"
+      className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded"
       onClick={() => onSort(col)}
+      aria-label={`Sort by ${label}${active ? (order === 'desc' ? ' descending' : ' ascending') : ''}`}
     >
       {label}
       {active ? (
         order === 'desc' ? (
-          <ArrowDown size={12} className="text-slate-800" />
+          <ArrowDown size={12} className="text-slate-800" aria-hidden="true" />
         ) : (
-          <ArrowUp size={12} className="text-slate-800" />
+          <ArrowUp size={12} className="text-slate-800" aria-hidden="true" />
         )
       ) : (
-        <ArrowUpDown size={12} className="text-slate-400" />
+        <ArrowUpDown size={12} className="text-slate-400" aria-hidden="true" />
       )}
     </button>
   );
 }
 
-const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const STATUS_VARIANTS: Record<string, 'default' | 'secondary'> = {
   ACTIVE: 'default',
   INACTIVE: 'secondary',
-  RESIGNED: 'destructive',
-  ON_LEAVE: 'outline',
 };
 
 export function formatSalary(val: number | string | null | undefined): string {
@@ -161,16 +160,22 @@ export function buildColumns({ isAdmin, onEdit, onDelete, onSort, sortBy, order 
       header: () => <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Actions</span>,
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={() => onEdit(row.original)}>
-            <Pencil size={14} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(row.original)}
+            aria-label={`Edit ${row.original.name}`}
+          >
+            <Pencil size={14} aria-hidden="true" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             className="text-red-400 hover:text-red-600"
             onClick={() => onDelete(row.original)}
+            aria-label={`Delete ${row.original.name}`}
           >
-            <Trash2 size={14} />
+            <Trash2 size={14} aria-hidden="true" />
           </Button>
         </div>
       ),

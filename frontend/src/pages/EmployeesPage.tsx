@@ -35,7 +35,7 @@ export function EmployeesPage() {
     departmentId: departmentId || undefined,
     status: status || undefined,
     page,
-    limit: 20,
+    limit: 10,
     sortBy: sort.sortBy,
     order: sort.order,
   });
@@ -128,10 +128,11 @@ export function EmployeesPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2 flex-1 max-w-2xl flex-wrap">
           <div className="relative flex-1 min-w-40">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" />
             <Input
               className="pl-8"
               placeholder="Search by name…"
+              aria-label="Search employees by name"
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -146,7 +147,7 @@ export function EmployeesPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-44">
+            <SelectTrigger className="w-44" aria-label="Filter by department">
               <SelectValue placeholder="Department" />
             </SelectTrigger>
             <SelectContent>
@@ -165,7 +166,7 @@ export function EmployeesPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-36">
+            <SelectTrigger className="w-36" aria-label="Filter by status">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -207,7 +208,7 @@ export function EmployeesPage() {
         isLoading={isLoading}
         total={total}
         page={page}
-        limit={20}
+        limit={10}
         onPageChange={setPage}
       />
 

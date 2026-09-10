@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -28,7 +28,7 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
     watch,
     formState: { errors },
   } = useForm<EmployeeFormData>({
-    resolver: zodResolver(employeeSchema) as any,
+    resolver: zodResolver(employeeSchema) as Resolver<EmployeeFormData>,
     defaultValues: {
       empCode: '',
       name: '',
@@ -76,17 +76,17 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <Label>Employee Code</Label>
-              <Input {...register('empCode')} placeholder="101" />
-              {errors.empCode && <p className="text-xs text-red-500">{errors.empCode.message}</p>}
+              <Label htmlFor="empCode">Employee Code</Label>
+              <Input id="empCode" {...register('empCode')} placeholder="101" />
+              {errors.empCode && <p role="alert" className="text-xs text-red-500">{errors.empCode.message}</p>}
             </div>
             <div className="space-y-1">
-              <Label>Status</Label>
+              <Label htmlFor="employee-status">Status</Label>
               <Select
                 value={currentStatus || 'ACTIVE'}
                 onValueChange={(v) => setValue('status', v as EmployeeFormData['status'], { shouldValidate: true })}
               >
-                <SelectTrigger>
+                <SelectTrigger id="employee-status" aria-label="Status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -94,21 +94,21 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
                   <SelectItem value="INACTIVE">In Active</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.status && <p className="text-xs text-red-500">{errors.status.message}</p>}
+              {errors.status && <p role="alert" className="text-xs text-red-500">{errors.status.message}</p>}
             </div>
           </div>
           <div className="space-y-1">
-            <Label>Full Name</Label>
-            <Input {...register('name')} placeholder="Jane Doe" />
-            {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
+            <Label htmlFor="name">Full Name</Label>
+            <Input id="name" {...register('name')} placeholder="Jane Doe" />
+            {errors.name && <p role="alert" className="text-xs text-red-500">{errors.name.message}</p>}
           </div>
           <div className="space-y-1">
-            <Label>Department</Label>
+            <Label htmlFor="employee-department">Department</Label>
             <Select
               value={currentDepartmentId || undefined}
               onValueChange={(v) => setValue('departmentId', v, { shouldValidate: true })}
             >
-              <SelectTrigger>
+              <SelectTrigger id="employee-department" aria-label="Department">
                 <SelectValue placeholder="Select department" />
               </SelectTrigger>
               <SelectContent>
@@ -119,21 +119,22 @@ export function EmployeeModal({ open, onClose, onSubmit, employee, isLoading }: 
                 ))}
               </SelectContent>
             </Select>
-            {errors.departmentId && <p className="text-xs text-red-500">{errors.departmentId.message}</p>}
+            {errors.departmentId && <p role="alert" className="text-xs text-red-500">{errors.departmentId.message}</p>}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <Label>Salary</Label>
-              <Input type="number" step="any" {...register('salary')} placeholder="50000" />
-              {errors.salary && <p className="text-xs text-red-500">{errors.salary.message}</p>}
+              <Label htmlFor="salary">Salary</Label>
+              <Input id="salary" type="number" step="any" {...register('salary')} placeholder="50000" />
+              {errors.salary && <p role="alert" className="text-xs text-red-500">{errors.salary.message}</p>}
             </div>
             <div className="space-y-1">
-              <Label>Join Date</Label>
+              <Label htmlFor="joinDate">Join Date</Label>
               <Input
+                id="joinDate"
                 type="date"
                 {...register('joinDate')}
               />
-              {errors.joinDate && <p className="text-xs text-red-500">{errors.joinDate.message}</p>}
+              {errors.joinDate && <p role="alert" className="text-xs text-red-500">{errors.joinDate.message}</p>}
             </div>
           </div>
           <DialogFooter>

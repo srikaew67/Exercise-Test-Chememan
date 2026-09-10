@@ -3,9 +3,13 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateEmployeeDto } from './dto/create-employee.dto.js';
 import { UpdateEmployeeDto } from './dto/update-employee.dto.js';
 import { EmployeeQueryDto } from './dto/employee-query.dto.js';
-import { Prisma } from '@prisma/client';
+import { Prisma, EmployeeStatus } from '@prisma/client';
 
 const SORTABLE_FIELDS = ['name', 'empCode', 'salary', 'joinDate', 'status', 'lastUpdatedDate'];
+
+function toDateOrNow(val?: string | null): Date {
+  return val ? new Date(val) : new Date();
+}
 
 @Injectable()
 export class EmployeesService {
@@ -21,10 +25,10 @@ export class EmployeesService {
     const where: Prisma.EmployeeWhereInput = {
       ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
       ...(departmentId ? { departmentId } : {}),
-      ...(status ? { status: status as any } : {}),
+      ...(status ? { status: status as EmployeeStatus } : {}),
     };
 
-    const [data, total] = await this.prisma.$transaction([
+    const [data, total] = await Promise.all([
       this.prisma.employee.findMany({
         where,
         include: { department: true },
@@ -56,8 +60,8 @@ export class EmployeesService {
           departmentId: dto.departmentId,
           salary: dto.salary,
           joinDate: new Date(dto.joinDate),
-          status: dto.status as any,
-          lastUpdatedDate: dto.lastUpdatedDate ? new Date(dto.lastUpdatedDate) : new Date(),
+          status: dto.status as EmployeeStatus,
+          lastUpdatedDate: toDateOrNow(dto.lastUpdatedDate),
           createdById: userId,
         },
         include: { department: true },
@@ -81,8 +85,8 @@ export class EmployeesService {
           ...(dto.departmentId !== undefined && { departmentId: dto.departmentId }),
           ...(dto.salary !== undefined && { salary: dto.salary }),
           ...(dto.joinDate !== undefined && { joinDate: new Date(dto.joinDate) }),
-          ...(dto.status !== undefined && { status: dto.status as any }),
-          lastUpdatedDate: dto.lastUpdatedDate ? new Date(dto.lastUpdatedDate) : new Date(),
+          ...(dto.status !== undefined && { status: dto.status as EmployeeStatus }),
+          lastUpdatedDate: toDateOrNow(dto.lastUpdatedDate),
           updatedById: userId,
         },
         include: { department: true },
@@ -114,8 +118,8 @@ export class EmployeesService {
           departmentId: row.departmentId,
           salary: row.salary,
           joinDate: new Date(row.joinDate),
-          status: row.status as any,
-          lastUpdatedDate: row.lastUpdatedDate ? new Date(row.lastUpdatedDate) : new Date(),
+          status: row.status as EmployeeStatus,
+          lastUpdatedDate: toDateOrNow(row.lastUpdatedDate),
           updatedById: userId,
         },
         create: {
@@ -124,8 +128,8 @@ export class EmployeesService {
           departmentId: row.departmentId,
           salary: row.salary,
           joinDate: new Date(row.joinDate),
-          status: row.status as any,
-          lastUpdatedDate: row.lastUpdatedDate ? new Date(row.lastUpdatedDate) : new Date(),
+          status: row.status as EmployeeStatus,
+          lastUpdatedDate: toDateOrNow(row.lastUpdatedDate),
           createdById: userId,
         },
       }),

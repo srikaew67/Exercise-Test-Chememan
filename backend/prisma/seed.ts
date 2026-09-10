@@ -4,16 +4,29 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  // สร้าง admin user เริ่มต้น (เปลี่ยน password หลัง deploy จริง)
-  const adminPasswordHash = await bcrypt.hash('ChangeMe123!', 10);
+  // สร้าง admin user เริ่มต้น
+  const adminPasswordHash = await bcrypt.hash('AdminPassword123!', 10);
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@example.com' },
-    update: {},
+    update: { passwordHash: adminPasswordHash },
     create: {
       email: 'admin@example.com',
       passwordHash: adminPasswordHash,
       role: Role.ADMIN,
+    },
+  });
+
+  // สร้าง regular user เริ่มต้น (สำหรับทดสอบ Non-Admin Role)
+  const userPasswordHash = await bcrypt.hash('UserPassword123!', 10);
+
+  const user = await prisma.user.upsert({
+    where: { email: 'user@example.com' },
+    update: { passwordHash: userPasswordHash },
+    create: {
+      email: 'user@example.com',
+      passwordHash: userPasswordHash,
+      role: Role.USER,
     },
   });
 
@@ -35,7 +48,9 @@ async function main() {
     });
   }
 
-  console.log('Seed completed. Admin user:', admin.email);
+  console.log('Seed completed.');
+  console.log('  Admin user:   ', admin.email);
+  console.log('  Regular user: ', user.email);
 }
 
 main()

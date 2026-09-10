@@ -29,11 +29,16 @@ export function Sidebar({ isAdmin, isOpen, onClose }: SidebarProps) {
       )}>
         <div className="flex items-center justify-between h-16 px-5 border-b border-slate-200">
           <span className="text-base font-semibold text-slate-900">EMP Portal</span>
-          <button onClick={onClose} className="lg:hidden text-slate-400 hover:text-slate-600">
-            <X size={18} />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close sidebar navigation"
+            className="lg:hidden text-slate-400 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded p-1"
+          >
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-3 py-4 space-y-0.5" aria-label="Main navigation">
           {navItems.map(({ to, label, icon: Icon, exact }) => (
             <NavLink
               key={to} to={to} end={exact} onClick={onClose}

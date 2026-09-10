@@ -20,7 +20,7 @@ export class CreateEmployeeDto {
   @IsDateString()
   joinDate: string;
 
-  @IsEnum(['ACTIVE', 'INACTIVE', 'RESIGNED', 'ON_LEAVE'])
+  @IsEnum(['ACTIVE', 'INACTIVE'])
   status: string;
 
   @IsOptional()

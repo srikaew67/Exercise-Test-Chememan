@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import ExcelJS from 'exceljs';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { EmployeeStatus } from '@prisma/client';
 
 export interface ValidatedEmployeeRow {
   empCode: string;
@@ -8,7 +9,7 @@ export interface ValidatedEmployeeRow {
   departmentId: string;
   salary: number;
   joinDate: string;
-  status: string;
+  status: EmployeeStatus;
   lastUpdatedDate: string;
 }
 
@@ -120,15 +121,11 @@ export class ExcelService {
       const rawStatusStr =
         rawStatus !== undefined && rawStatus !== null ? String(rawStatus).trim() : '';
       const normStatus = rawStatusStr.toUpperCase().replace(/[\s_-]+/g, '');
-      let statusStr = '';
+      let statusStr: EmployeeStatus | '' = '';
       if (normStatus === 'ACTIVE') {
-        statusStr = 'ACTIVE';
+        statusStr = EmployeeStatus.ACTIVE;
       } else if (normStatus === 'INACTIVE') {
-        statusStr = 'INACTIVE';
-      } else if (normStatus === 'RESIGNED') {
-        statusStr = 'RESIGNED';
-      } else if (normStatus === 'ONLEAVE') {
-        statusStr = 'ON_LEAVE';
+        statusStr = EmployeeStatus.INACTIVE;
       }
 
       if (!statusStr) {
@@ -146,7 +143,7 @@ export class ExcelService {
           departmentId: departmentId!,
           salary,
           joinDate: joinDate!,
-          status: statusStr,
+          status: statusStr as EmployeeStatus,
           lastUpdatedDate: lastUpdatedDate!,
         });
       }

@@ -52,7 +52,7 @@ describe('ExcelService', () => {
           department: null,
           salary: 60000,
           joinDate: '2024-02-01',
-          status: 'ON_LEAVE',
+          status: 'INACTIVE',
           lastUpdatedDate: '2024-05-15',
         },
       ];
@@ -94,7 +94,7 @@ describe('ExcelService', () => {
       expect(row3.getCell(3).value).toBe('');
       expect(row3.getCell(4).value).toBe(60000);
       expect(row3.getCell(5).value).toBe('2024-02-01');
-      expect(row3.getCell(6).value).toBe('ON_LEAVE');
+      expect(row3.getCell(6).value).toBe('INACTIVE');
       expect(row3.getCell(7).value).toBe('2024-05-15');
     });
 
@@ -192,7 +192,7 @@ describe('ExcelService', () => {
       const buffer = await createWorkbookBuffer([
         ['EMP001', 'Alice', 'Engineering', 75000, '2024-01-10', 'ACTIVE', '2024-05-01'],
         ['', 'Incomplete', 'Engineering', 50000, '2024-01-10', 'ACTIVE', '2024-05-01'],
-        ['EMP003', 'Charlie', 'Engineering', 60000, '2024-01-10', 'RESIGNED', '2024-05-01'],
+        ['EMP003', 'Charlie', 'Engineering', 60000, '2024-01-10', 'INACTIVE', '2024-05-01'],
       ]);
 
       const result = await service.parseAndValidate(buffer);
@@ -208,14 +208,14 @@ describe('ExcelService', () => {
       const buffer = await createWorkbookBuffer([
         ['E1', 'Emp 1', 'Engineering', 50000, '2024-01-01', 'ACTIVE', '2024-01-01'],
         ['E2', 'Emp 2', 'Engineering', 50000, '2024-01-01', 'In Active', '2024-01-01'],
-        ['E3', 'Emp 3', 'Engineering', 50000, '2024-01-01', 'RESIGNED', '2024-01-01'],
-        ['E4', 'Emp 4', 'Engineering', 50000, '2024-01-01', 'on_leave', '2024-01-01'],
+        ['E3', 'Emp 3', 'Engineering', 50000, '2024-01-01', 'Inactive', '2024-01-01'],
+        ['E4', 'Emp 4', 'Engineering', 50000, '2024-01-01', 'Active', '2024-01-01'],
       ]);
 
       const result = await service.parseAndValidate(buffer);
       expect(result.invalidRows).toHaveLength(0);
       expect(result.validRows).toHaveLength(4);
-      expect(result.validRows.map((r) => r.status)).toEqual(['ACTIVE', 'INACTIVE', 'RESIGNED', 'ON_LEAVE']);
+      expect(result.validRows.map((r) => r.status)).toEqual(['ACTIVE', 'INACTIVE', 'INACTIVE', 'ACTIVE']);
     });
   });
 });

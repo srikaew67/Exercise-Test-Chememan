@@ -83,11 +83,10 @@ npm run dev                 # start dev server at http://localhost:5173
 
 ## Default Credentials
 
-| Field | Value |
-|---|---|
-| Email | `admin@example.com` |
-| Password | `ChangeMe123!` |
-| Role | `ADMIN` |
+| Role | Email | Password | Permissions |
+|---|---|---|---|
+| **ADMIN** | `admin@example.com` | `AdminPassword123!` | Full CRUD, Import, Export, Departments |
+| **USER** | `user@example.com` | `UserPassword123!` | Read-Only Dashboard & Employee List |
 
 ---
 
@@ -99,7 +98,7 @@ npm run dev                 # start dev server at http://localhost:5173
 |---|---|---|
 | `DATABASE_URL` | `postgresql://postgres:mysecretpassword@localhost:5433/mydb` | PostgreSQL connection string |
 | `JWT_SECRET` | `change_me_in_production` | JWT signing secret — **change in production** |
-| `JWT_EXPIRES_IN` | `24h` | JWT token expiry duration |
+| `JWT_EXPIRES_IN` | `30m` | JWT token expiry duration |
 | `PORT` | `3000` | Backend HTTP server port |
 
 ### `frontend/.env`
@@ -187,7 +186,7 @@ Employee
   id (UUID), empCode (unique), name
   departmentId → Department
   salary (Decimal 12,2), joinDate (Date)
-  status (ACTIVE | INACTIVE | RESIGNED | ON_LEAVE)
+  status (ACTIVE | INACTIVE)
   lastUpdatedDate  — auto-set on create/update, never manually inputted
   createdById → User, updatedById → User
 ```

@@ -16,7 +16,7 @@ export class EmployeeQueryDto {
   departmentId?: string;
 
   @IsOptional()
-  @IsEnum(['ACTIVE', 'INACTIVE', 'RESIGNED', 'ON_LEAVE'])
+  @IsEnum(['ACTIVE', 'INACTIVE'])
   status?: string;
 
   @IsOptional()

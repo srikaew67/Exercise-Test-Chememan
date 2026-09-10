@@ -116,21 +116,21 @@ export function DepartmentsPage() {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Name</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Code</th>
-              <th className="px-5 py-3" />
+              <th scope="col" className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Name</th>
+              <th scope="col" className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Code</th>
+              <th scope="col" className="px-5 py-3"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={3} className="text-center py-10 text-slate-400">
+                <td colSpan={3} role="status" className="text-center py-10 text-slate-400">
                   Loading…
                 </td>
               </tr>
             ) : departments.length === 0 ? (
               <tr>
-                <td colSpan={3} className="text-center py-10 text-slate-400">
+                <td colSpan={3} role="status" className="text-center py-10 text-slate-400">
                   No departments yet
                 </td>
               </tr>
@@ -143,16 +143,22 @@ export function DepartmentsPage() {
                   </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1 justify-end">
-                      <Button variant="ghost" size="icon" onClick={() => openEdit(d)}>
-                        <Pencil size={14} />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEdit(d)}
+                        aria-label={`Edit ${d.name} department`}
+                      >
+                        <Pencil size={14} aria-hidden="true" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="text-red-400 hover:text-red-600"
                         onClick={() => setDeleteTarget(d)}
+                        aria-label={`Delete ${d.name} department`}
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={14} aria-hidden="true" />
                       </Button>
                     </div>
                   </td>
@@ -170,15 +176,15 @@ export function DepartmentsPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="space-y-4 py-2">
             <div className="space-y-1">
-              <Label>Name</Label>
-              <Input {...register('name')} placeholder="Engineering" />
-              {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
+              <Label htmlFor="dept-name">Name</Label>
+              <Input id="dept-name" {...register('name')} placeholder="Engineering" />
+              {errors.name && <p role="alert" className="text-xs text-red-500">{errors.name.message}</p>}
             </div>
             <div className="space-y-1">
-              <Label>
+              <Label htmlFor="dept-code">
                 Code <span className="text-slate-400 text-xs">(optional)</span>
               </Label>
-              <Input {...register('code')} placeholder="ENG" />
+              <Input id="dept-code" {...register('code')} placeholder="ENG" />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>

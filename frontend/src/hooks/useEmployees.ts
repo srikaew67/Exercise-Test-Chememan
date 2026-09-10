@@ -8,7 +8,7 @@ export interface Employee {
   department: { id: string; name: string };
   salary: number;
   joinDate: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'RESIGNED' | 'ON_LEAVE';
+  status: 'ACTIVE' | 'INACTIVE';
   lastUpdatedDate: string;
 }
 

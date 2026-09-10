@@ -98,26 +98,27 @@ export function ImportModal({ open, onClose }: { open: boolean; onClose: () => v
             <p className="text-sm text-slate-600">
               Upload an <code className="bg-slate-100 px-1 py-0.5 rounded text-xs">.xlsx</code> file with columns: ID, Name, Department, Salary, Join Date, Status, Last Updated Date.
             </p>
-            <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-slate-400 transition-colors">
-              <Upload className="mx-auto mb-2 text-slate-400" size={32} />
+            <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-slate-400 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+              <Upload className="mx-auto mb-2 text-slate-400" size={32} aria-hidden="true" />
               <input
                 ref={fileRef}
                 type="file"
                 accept=".xlsx"
-                className="hidden"
+                className="sr-only"
                 id="xlsx-input"
+                aria-label="Upload Excel spreadsheet (.xlsx)"
                 onChange={(e) => setFileName(e.target.files?.[0]?.name ?? '')}
               />
-              <label htmlFor="xlsx-input" className="cursor-pointer text-sm font-medium text-blue-600 hover:underline">
+              <label htmlFor="xlsx-input" className="cursor-pointer text-sm font-medium text-blue-600 hover:underline focus-visible:outline-none">
                 Click to select file
               </label>
               {fileName && (
-                <p className="mt-2 text-xs font-semibold text-slate-700 bg-slate-100 inline-block px-2.5 py-1 rounded">
-                  {fileName}
+                <p className="mt-2 text-xs font-semibold text-slate-700 bg-slate-100 inline-block px-2.5 py-1 rounded" aria-live="polite">
+                  Selected: {fileName}
                 </p>
               )}
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
             <DialogFooter>
               <Button variant="outline" onClick={handleClose}>
                 Cancel
